@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Class-Path: scala-actors.jar scala-swing.jar scala-reflect.jar scala-a
+ ctors-migration.jar scala-library.jar spark-assembly-1.4.0-hadoop2.6.
+ 0.jar
+Main-Class: IRMRangeSearch
+
