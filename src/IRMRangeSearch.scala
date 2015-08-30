@@ -1,5 +1,4 @@
 
-import org.apache.spark.rdd.RDD
 import org.apache.spark.sql.SQLContext
 import org.apache.spark.{SparkConf, SparkContext}
 
@@ -46,8 +45,8 @@ object IRMRangeSearch {
       val sc = new SparkContext(conf)
       val sqlContext = new SQLContext(sc)
       import sqlContext.implicits._
-      // val inputFile = sc.textFile("file:///mnt/datafiles/datasource.csv").
-      val inputFile = "file:///home/sparkusr/datafiles/pird.csv"
+      val inputFile = "file:///mnt/datafiles/datasource.csv"
+      //val inputFile = "file:///home/sparkusr/datafiles/pird.csv"
       val data = sc.textFile(inputFile)
       val dataWithoutHeader = IRMUtils.dropHeader(data)
         .map(_.split(",")
@@ -76,10 +75,10 @@ object IRMRangeSearch {
         ).toDF()
       dataWithoutHeader.registerTempTable("pird")
       //val output = sqlContext.sql(args(0))
-      val output = sqlContext.sql("select * from pird where track = 2").repartition(10)
-      val outputFolder = "file:///home/sparkusr/outputfolder"
+      val output = sqlContext.sql("select * from pird where track = 21") //.repartition(10)
+      // val outputFolder = "file:///home/sparkusr/outputfolder"
 
-      output.map(row => row).saveAsTextFile(outputFolder)
+      //output.map(row => row).saveAsTextFile(outputFolder)
       /*output.foreachPartition {
         partition => partition
           val serverSocket = new ServerSocket(4020)
@@ -92,15 +91,13 @@ object IRMRangeSearch {
           partition.foreach(record => toClient.println(record))
           serverSocket.close()
       }*/
-
+      output.foreach(println)
       sc.stop()
       val endTime = System.currentTimeMillis()
 
       println("Total time taken: " + ((endTime - startTime) / 1000D) + " Secs")
     }
   }
-
-
 
 
 }

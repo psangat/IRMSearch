@@ -1,9 +1,9 @@
 import org.apache.spark.rdd.RDD
 
 /**
- * Created by sparkusr on 31/07/15.
+ * Created by Prajwol Sangat on 31/07/15.
  */
-object IRMUtils {
+object Utils {
   def dropHeader(data: RDD[String]): RDD[String] = {
 
     data.mapPartitionsWithIndex((index, rows) => {
@@ -20,7 +20,7 @@ object IRMUtils {
   }
 
   def convertToDouble(string: String): Double = {
-    return string.toDouble
+    return  string.toDouble
   }
 
   def convertToInt(string: String): Int = {

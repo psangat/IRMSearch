@@ -1,5 +1,3 @@
-package edu.monash.IRM
-
 import java.io.StringReader
 import java.text.DecimalFormat
 import java.util.regex.Pattern
@@ -7,13 +5,13 @@ import java.util.regex.Pattern
 import au.com.bytecode.opencsv.CSVReader
 import org.apache.spark.sql.SQLContext
 import org.apache.spark.streaming.{Seconds, StreamingContext}
-import org.apache.spark.{SparkContext, SparkConf}
+import org.apache.spark.{SparkConf, SparkContext}
 
 /**
  * Created by Prajwol Sangat on 16/08/15.
  */
 
-case class TimeLookUpTable
+case class TimeLookUpTable6
 (
   SomatTime: Double,
   UTCMonth: Double,
@@ -59,7 +57,7 @@ object StreamMapping {
             .map(row => row.toString().replace("(", "").replace(")", ""))
             .map(_.split(",")
             .map(_.trim))
-            .map(p => TimeLookUpTable(
+            .map(p => TimeLookUpTable6(
             Utils.convertToDouble(p(0)),
             Utils.convertToDouble(p(1)),
             Utils.convertToDouble(p(2)),
@@ -81,37 +79,39 @@ object StreamMapping {
             sb.append("\"" + i + "\"" + ":{" + "")
             val singleRowArray = rowsWithoutHeader(i).split(",")
             (header, singleRowArray).zipped
-              .foreach { (x, y) =>
-              sb.append("\"" + x + "\": \"" + y.trim + "\",")
-              if (x.equals("SomatTime")) {
-                val rowTimeLookUp = timeLookUpTable.filter("SomatTime = " + y.trim)
-                  .select("UTCMonth", "UTCDay", "UTCHour", "UTCMinute", "UTCSecond").first()
-                if (rowTimeLookUp.size > 0) {
-                  val formattedRow = (df.format(rowTimeLookUp(0))
-                    + "-" + df.format(rowTimeLookUp(1))
-                    + " " + df.format(rowTimeLookUp(2))
-                    + ":" + df.format(rowTimeLookUp(3))
-                    + ":" + df.format(rowTimeLookUp(4))) //.foreach(print)
-                  sb.append("\"" + "UTCTime" + "\": \"" + formattedRow + "\",")
-                }
-              }
-              else if (x.equals("GPSLat")) {
-                lattitude = y.toDouble
-              }
-              else if (x.equals("GPSLon")) {
-                /* val rowGPSLookUp = gpsLookUpTable.filter("Lat = " + lattitude + "AND Lon = " + y.toDouble).select("TrackKM", "TrackCode", "TrackName").first()
-                 if (rowGPSLookUp.size > 0) {
-                   sb.append ("\"" + "TrackKM" + "\": \"" + rowGPSLookUp(0) + "\",")
-                   sb.append ("\"" + "TrackName" + "\": \"" + rowGPSLookUp(2) + "\",")
-                 }*/
+              .map { case (key, value) => "\"" + key + "\": \"" + value.trim + "\"," }
+              .foreach(println)
+            /*.foreach { (x, y) =>
+            sb.append("\"" + x + "\": \"" + y.trim + "\",")
+            if (x.equals("SomatTime")) {
+              val rowTimeLookUp = timeLookUpTable.filter("SomatTime = " + y.trim)
+                .select("UTCMonth", "UTCDay", "UTCHour", "UTCMinute", "UTCSecond").first()
+              if (rowTimeLookUp.size > 0) {
+                val formattedRow = (df.format(rowTimeLookUp(0))
+                  + "-" + df.format(rowTimeLookUp(1))
+                  + " " + df.format(rowTimeLookUp(2))
+                  + ":" + df.format(rowTimeLookUp(3))
+                  + ":" + df.format(rowTimeLookUp(4))) //.foreach(print)
+                sb.append("\"" + "UTCTime" + "\": \"" + formattedRow + "\",")
               }
             }
+            else if (x.equals("GPSLat")) {
+              lattitude = y.toDouble
+            }
+            else if (x.equals("GPSLon")) {
+              /* val rowGPSLookUp = gpsLookUpTable.filter("Lat = " + lattitude + "AND Lon = " + y.toDouble).select("TrackKM", "TrackCode", "TrackName").first()
+               if (rowGPSLookUp.size > 0) {
+                 sb.append ("\"" + "TrackKM" + "\": \"" + rowGPSLookUp(0) + "\",")
+                 sb.append ("\"" + "TrackName" + "\": \"" + rowGPSLookUp(2) + "\",")
+               }*/
+            }
+          }*/
             sb.setLength(sb.length - 1)
             sb.append("},")
           }
           sb.setLength(sb.length - 1)
           sb.append("}]}")
-          print(sb.toString)
+          //print(sb.toString)
         }
     }
 
