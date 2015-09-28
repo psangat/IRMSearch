@@ -20,7 +20,7 @@ object Utils {
   }
 
   def convertToDouble(string: String): Double = {
-    return  string.toDouble
+    return string.toDouble
   }
 
   def convertToInt(string: String): Int = {

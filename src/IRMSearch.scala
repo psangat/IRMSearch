@@ -1,24 +1,24 @@
-import org.apache.spark.{SparkContext, SparkConf}
+import org.apache.spark.{SparkConf, SparkContext}
+
 //import org.apache.spark.sql.hive.HiveContext
 /**
  * Created by sparkusr on 20/07/15.
  */
 object IRMSearch {
-  def main (args: Array[String]) {
-    if (args.length == 5)
-      {
+  def main(args: Array[String]) {
+    if (args.length == 5) {
 
-        println("Search word expected as Input")
-      }
+      println("Search word expected as Input")
+    }
     else {
       val startTime = System.currentTimeMillis()
       val conf = new SparkConf()
         .setAppName("IRM Search")
         .setMaster("local[*]")
-        .set("spark.executor.memory","10g")
+        .set("spark.executor.memory", "10g")
 
       val sc = new SparkContext(conf)
-     // val hiveCtx = new HiveContext(sc)
+      // val hiveCtx = new HiveContext(sc)
       //hiveCtx.sql()
       val rows = sc.textFile("file:///home/sparkusr/datafiles/*")
       val selectedRows1 = rows.filter(_.contains("test2")).cache()
@@ -29,7 +29,7 @@ object IRMSearch {
       sc.stop()
       val endTime = System.currentTimeMillis()
 
-      println("Total time taken: " + ((endTime-startTime) / 1000D) + " Secs")
+      println("Total time taken: " + ((endTime - startTime) / 1000D) + " Secs")
     }
   }
 }

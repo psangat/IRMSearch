@@ -40,7 +40,7 @@ object StreamMapping {
   def streamProcessing(sc: SparkContext): Unit = {
     //"file:///home/sparkusr/supportfiles/542_20150617_2131_gpsCL.CSV"
     val pattern = Pattern.compile("[0-9]{1,4}_(.*?)_(.*?)_gpsCL.CSV")
-    val scc = new StreamingContext(sc, Seconds(20))
+    val scc = new StreamingContext(sc, Seconds(800))
     scc.textFileStream("hdfs://localhost:9000/localdir/").foreachRDD {
       singleRDD =>
         val debugString = singleRDD.toDebugString
@@ -53,7 +53,7 @@ object StreamMapping {
             reader.readNext()
           }
           val timeLookUpTable = csv1.mapPartitionsWithIndex { (idx, iter) => if (idx == 0) iter.drop(1) else iter }
-            .map { row => (row(0), row(10), row(11), row(12), row(13), row(14))}
+            .map { row => (row(0), row(10), row(11), row(12), row(13), row(14)) }
             .map(row => row.toString().replace("(", "").replace(")", ""))
             .map(_.split(",")
             .map(_.trim))
