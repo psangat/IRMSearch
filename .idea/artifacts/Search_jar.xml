@@ -6,7 +6,6 @@
         <element id="module-output" name="IRMSearch" />
       </element>
       <element id="library" level="application" name="scala-sdk-2.10.4" />
-      <element id="library" level="project" name="spark-assembly-1.4.0-hadoop2.6.0" />
     </root>
   </artifact>
 </component>
