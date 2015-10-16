@@ -5,8 +5,8 @@ package edu.monash.Thesis
  */
 
 import org.apache.log4j.{Level, Logger}
-import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.rdd._
+import org.apache.spark.{SparkConf, SparkContext}
 
 object SKS {
   Logger.getLogger("org").setLevel(Level.WARN)
@@ -24,12 +24,12 @@ object SKS {
 
     //val output = sc.parallelize(Array(1,2,3,4,5))
     //output.saveAsTextFile("/Users/psangat/Dropbox/testfiles/file01.rtf")
-    val output = sc.wholeTextFiles("/Users/psangat/Dropbox/testfiles/file01.rtf") // location of the input files
+    val output = sc.wholeTextFiles("/Users/psangat/Dropbox/testfiles/file.txt") // location of the input files
     val words = Common.calc_W(output)
     val DB = Common.calc_DB(output)
     setup(DB, words, sc)
     if (EDB.size > 0) {
-      val keys = search_client("K", "My")
+      val keys = search_client("K", "Monash")
       val docLocation = search_server(keys._1.toString, keys._2.toString)
       if (docLocation.size <= 0) {
         println("The searched keyword does not exist")
@@ -58,7 +58,7 @@ object SKS {
         DB.lookup(word)(0).split(" ; ").foreach {
           id =>
             val label = Common.hash("F", k1.toString, c.toString)
-            val d = Common.encrypt(k2.toString, DB.lookup(word).toString)
+            val d = Common.encrypt(k2.toString, id)
             c += 1
             EDB += (label.toString -> d)
             xSet += Common.hash("F", xTrap.toString, id)
