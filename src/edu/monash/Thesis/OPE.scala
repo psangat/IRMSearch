@@ -35,7 +35,9 @@ object OPE {
     val plainTexts = Common.calc_W(output)
     scala.util.Sorting.quickSort(plainTexts)
     createPlainTextRange(plainTexts(0).toInt, plainTexts.last.toInt)
+    ptIntervals.foreach(println)
     createCipherTextRange()
+    ctIntervals.foreach(println)
     plainTexts.foreach { num =>
       println("=======================")
       println(num)
@@ -158,6 +160,14 @@ object OPE {
     return (0.0, -1)
   }
 
+  def getPlainTextRange(index: Int): Interval = {
+    return ptIntervals.get(index)
+  }
+
+  def getCipherTextRange(index: Int): Interval = {
+    return ctIntervals.get(index)
+  }
+
   def decrypt(xPrime: Double, b: Int): Unit = {
     val ctlv = getCipherTextRange(0).lv
     val ctrv = getCipherTextRange(0).rv
@@ -177,31 +187,24 @@ object OPE {
           if (b == 0) {
             val ptlv = getPlainTextRange(index).lv
             val ptrv = getPlainTextRange(index).rv
-            val s = (interval.rv - interval.lv) / (ptrv - ptlv).toDouble
-            val x = Math.round((xPrime - (ctlv - s * ptlv)) / s)
+            val ctlvminus = getCipherTextRange(index - 1).lv
+            val s = (interval.rv - ctlvminus) / (ptrv - ptlv).toDouble
+            val x = Math.round((xPrime - (ctlvminus - s * ptlv)) / s)
             print(x)
-            index += 1
           }
           else if (b == 1) {
             val ptlv = getPlainTextRange(index + 1).lv
             val ptrv = getPlainTextRange(index + 1).rv
-            val ctlvplus = getCipherTextRange(index + 1).rv
-            val s = (interval.rv - interval.lv) / (ptrv - ptlv).toDouble
-            val x = Math.round((xPrime - (ctlv - s * ptlv)) / s)
+            val ctrvplus = getCipherTextRange(index + 1).rv
+            val s = (ctrvplus - interval.lv) / (ptrv - ptlv).toDouble
+            val x = Math.round((xPrime - (interval.lv - s * ptlv)) / s)
             print(x)
-            index += 1
           }
         }
+        index += 1
+
       }
     }
-  }
-
-  def getPlainTextRange(index: Int): Interval = {
-    return ptIntervals.get(index)
-  }
-
-  def getCipherTextRange(index: Int): Interval = {
-    return ctIntervals.get(index)
   }
 
 }
