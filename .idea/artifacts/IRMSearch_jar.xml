@@ -1,0 +1,17 @@
+<component name="ArtifactManager">
+  <artifact build-on-make="true" name="IRMSearch:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/IRMSearch_jar</output-path>
+    <root id="root">
+      <element id="archive" name="IRMSearch.jar">
+        <element id="directory" name="META-INF">
+          <element id="file-copy" path="$PROJECT_DIR$/meta3/META-INF/MANIFEST.MF" />
+        </element>
+        <element id="module-output" name="IRMSearch" />
+      </element>
+      <element id="file-copy" path="$PROJECT_DIR$/../../Applications/mongo-hadoop/wikixmlj-r43.jar" />
+      <element id="file-copy" path="$PROJECT_DIR$/../../Applications/mongo-hadoop/casbah-alldep_2.10-2.6.2.jar" />
+      <element id="library" level="application" name="scala-sdk-2.10.4" />
+      <element id="file-copy" path="$PROJECT_DIR$/../../Applications/spark-1.4.0-bin-hadoop2.6/lib/spark-assembly-1.4.0-hadoop2.6.0.jar" />
+    </root>
+  </artifact>
+</component>

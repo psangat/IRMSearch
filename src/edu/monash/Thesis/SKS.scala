@@ -1,12 +1,14 @@
 package edu.monash.Thesis
 
 /**
- * Created by psangat on 15/10/15.
+ * Created by psangat on 22/05/15.
  */
 
 import org.apache.log4j.{Level, Logger}
 import org.apache.spark.rdd._
 import org.apache.spark.{SparkConf, SparkContext}
+
+import scala.collection.mutable._
 
 object SKS {
   Logger.getLogger("org").setLevel(Level.WARN)
@@ -15,21 +17,27 @@ object SKS {
   var xSet = Set[Int]()
 
   def main(args: Array[String]) {
+    if (args.length < 3) {
+      System.err.println("Usage: Single Keyword Search <master> <input_file> <search word>")
+      System.exit(1)
+    }
     val t1 = System.currentTimeMillis
     val conf = new SparkConf()
-      .setMaster("local[4]") // using 4 cores. change the int value to increase or decrease the cores used
-      .setAppName("SKS Implementation")
-      .set("spark.executor.memory", "2g") // 2GB of RAM assigned for spark
+      .setMaster(args(0))
+      .setAppName(this.getClass.getCanonicalName)
+      .set("spark.executor.instances", "3")
+      .set("spark.executor.memory", "4g")
+      .set("spark.executor.cores", "1")
+      .set("spark.task.cpus", "1")
+      .set("spark.driver.memory", "4g")
     val sc = new SparkContext(conf)
 
-    //val output = sc.parallelize(Array(1,2,3,4,5))
-    //output.saveAsTextFile("/Users/psangat/Dropbox/testfiles/file01.rtf")
-    val output = sc.wholeTextFiles("/Users/psangat/Dropbox/testfiles/file.txt") // location of the input files
+    val output = sc.wholeTextFiles(args(1))
     val words = Common.calc_W(output)
     val DB = Common.calc_DB(output)
     setup(DB, words, sc)
     if (EDB.size > 0) {
-      val keys = search_client("K", "Monash")
+      val keys = search_client("K", args(2))
       val docLocation = search_server(keys._1.toString, keys._2.toString)
       if (docLocation.size <= 0) {
         println("The searched keyword does not exist")
@@ -48,7 +56,6 @@ object SKS {
 
   def setup(DB: RDD[(String, String)], words: Array[String], sc: SparkContext): Int = {
     var k1, k2, xTrap = 0
-    //using scala map to store edb
     words.foreach {
       word =>
         k1 = Common.hash("hash1", "K", word)
@@ -64,7 +71,6 @@ object SKS {
             xSet += Common.hash("F", xTrap.toString, id)
         }
     }
-    //sc.parallelize(EDB.toIndexedSeq).saveAsTextFile("/Users/mac/Applications/output")
     return EDB.size
   }
 
@@ -80,7 +86,6 @@ object SKS {
       val docLocation = Common.decrypt(K2, encDocLocation)
       c = c + 1
       results += docLocation.toString
-      //label = hash("F", K1, c.toString)
     }
     return results
   }

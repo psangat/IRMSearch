@@ -59,20 +59,11 @@ object Common {
     return Base64.encodeBase64String(StringUtils.getBytesUtf8(message)) //DatatypeConverter.printBase64Binary(message)
   }
 
-  def main(args: Array[String]) {
-    val ke = Common.hash("hash2", "K", "w1")
-    //val enc = encrypt("K","Prajwol")
-    //println(enc)
-    println(decrypt(ke.toString, "MTQ3MTU2MTYxOmZpbGU6L1VzZXJzL3BzYW5nYXQvRHJvcGJveC90ZXN0ZmlsZXMvZmlsZS50eHQ="))
-  }
-
   // returns the hash
   def hash(keyWord: String, key: String, word: String): Int = return (keyWord + key + word).hashCode()
 
   // decrypt the ciphertext using the key
   def decrypt(key: String, cipherText: String): String = {
-
-
     val decoded = StringUtils.newStringUtf8(Base64.decodeBase64(cipherText)) // DatatypeConverter.parseBase64Binary(cipherText)
     val keyNdata = decoded.split(":") //new String(decoded, "UTF-8").split(":")
     if (keyNdata(0).equals(key)) {

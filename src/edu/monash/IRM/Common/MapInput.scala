@@ -22,7 +22,7 @@ object MapInput {
 
   def cacheMappingTables(sc: SparkContext, sqlContext: SQLContext): DataFrame = {
     //file:///home/sparkusr/supportfiles/GeoHashLookUpTable
-    val allRows = sc.textFile("hdfs://localhost:9000/supportFiles/GeoHashLookUpTable")
+    val allRows = sc.textFile("hdfs://master:9000/supportFiles/GeoHashLookUpTable")
     sqlContext.read.json(allRows).registerTempTable("GeoHashLookUpTable")
     val gpsLookUpTable = sqlContext.sql(" SELECT Lat, Lon, geoCode, TrackKM, TrackCode, TrackName, SubTrackCode, SubTrackName  FROM GeoHashLookUpTable ")
     return gpsLookUpTable

@@ -4,10 +4,10 @@ import org.apache.log4j.{Level, Logger}
 import org.apache.spark.rdd.RDD
 import org.apache.spark.{SparkConf, SparkContext}
 
+import scala.collection.mutable._
 import scala.util.control.Breaks._
-
 /**
- * Created by psangat on 15/10/15.
+ * Created by psangat on 15/06/15.
  */
 object BXT {
   Logger.getLogger("org").setLevel(Level.WARN)
@@ -17,24 +17,30 @@ object BXT {
   var xTraps = Set[String]()
 
   def main(args: Array[String]) {
+    if (args.length < 4) {
+      System.err.println("Usage: Basic Cross Tags <master> <input_file> <two search word>")
+      System.exit(1)
+    }
     val t1 = System.currentTimeMillis
     val conf = new SparkConf()
-      .setMaster("local[4]") // using 4 cores. change the int value to increase or decrease the cores used
-      .setAppName("SKS Implementation")
-      .set("spark.executor.memory", "2g") // 2GB of RAM assigned for spark
+      .setMaster(args(0))
+      .setAppName(this.getClass.getCanonicalName)
+      .set("spark.executor.instances", "3")
+      .set("spark.executor.memory", "4g")
+      .set("spark.executor.cores", "1")
+      .set("spark.task.cpus", "1")
+      .set("spark.driver.memory", "4g")
     val sc = new SparkContext(conf)
 
-    //val output = sc.parallelize(Array(1,2,3,4,5))
-    //output.saveAsTextFile("/Users/psangat/Dropbox/testfiles/file01.rtf")
-    val output = sc.wholeTextFiles("/Users/psangat/Dropbox/testfiles/file.txt") // location of the input files
+    val output = sc.wholeTextFiles(args(1))
     val words = Common.calc_W(output)
     val DB = Common.calc_DB(output)
     setup(DB, words, sc)
     if (EDB.size > 0) {
-      val keys = searchClient("K", Array("Monash", "University"))
+      val keys = searchClient("K", Array(args(2), args(3)))
       val docLocation = searchServer(keys._1.toString, keys._2.toString)
       if (docLocation.size <= 0) {
-        println("The searched keyword does not exist")
+        println("The searched keyword does not exist.")
       }
       else {
         println("Files found in: ")
@@ -66,7 +72,6 @@ object BXT {
             xSet += Common.hash("F", xTrap.toString, id)
         }
     }
-    //sc.parallelize(EDB.toIndexedSeq).saveAsTextFile("/Users/mac/Applications/output")
     return EDB.size
   }
 
@@ -104,7 +109,6 @@ object BXT {
         results += docLocation.toString
       c = c + 1
       results += docLocation.toString
-      //label = hash("F", K1, c.toString)
     }
     return results
   }

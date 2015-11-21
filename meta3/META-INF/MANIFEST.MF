@@ -1,0 +1,6 @@
+Manifest-Version: 1.0
+Class-Path: wikixmlj-r43.jar casbah-alldep_2.10-2.6.2.jar scala-actors
+ -migration.jar scala-actors.jar scala-library.jar scala-reflect.jar s
+ cala-swing.jar spark-assembly-1.4.0-hadoop2.6.0.jar
+Main-Class: edu.monash.IRM.Speed.ProcessMicroBatchStreams
+

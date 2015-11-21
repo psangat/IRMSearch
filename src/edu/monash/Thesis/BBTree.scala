@@ -1,7 +1,7 @@
 package edu.monash.Thesis
 
 /**
- * Created by psangat on 16/10/15.
+ * Created by psangat on 12/09/15.
  */
 
 
@@ -20,25 +20,14 @@ case class Node(
 }
 
 object BBTree {
-
   val leaves = new ArrayList[String]
 
-  def main(args: Array[String]) {
-    val tree = createTree()
-    BBS.chooseStags(tree)
-    /*getAllLeaves(tree)
-    leaves.foreach(println)
-    leaves.clear()
-    getAllLeaves(replaceAllLeaves(tree))
-    leaves.foreach(println)*/
-  }
-
   def createTree(): Node = {
-    val w1 = new Node("", new ArrayList[Node], "w1", 1)
-    val w2 = new Node("", new ArrayList[Node], "w2", 2)
-    val w3 = new Node("", new ArrayList[Node], "w3", 3)
-    val w4 = new Node("", new ArrayList[Node], "w4", 4)
-    val w5 = new Node("", new ArrayList[Node], "w5", 5)
+    val w1 = new Node("", new ArrayList[Node], "University", 1)
+    val w2 = new Node("", new ArrayList[Node], "Monash", 2)
+    val w3 = new Node("", new ArrayList[Node], "1958", 3)
+    val w4 = new Node("", new ArrayList[Node], "oldest", 4)
+    val w5 = new Node("", new ArrayList[Node], "founded", 5)
 
     val orChild = new ArrayList[Node]
     orChild.add(w1)
@@ -63,6 +52,7 @@ object BBTree {
     return root
   }
 
+  // returns all the leaves of the tree
   def getAllLeaves(node: Node): ArrayList[String] = {
     if (node.isLeaf)
       leaves.add(node.value)
@@ -82,7 +72,7 @@ object BBTree {
     return leaves
   }
 
-
+  // replaces all the leaves of tree with its corresponding xTraps
   def replaceAllLeaves(node: Node): Node = {
     if (node.isLeaf) {
       val xTrap = Common.hash("F", "KX", node.value)

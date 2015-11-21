@@ -7,9 +7,10 @@ import org.apache.spark.rdd.RDD
 import org.apache.spark.{SparkConf, SparkContext}
 
 import scala.collection.JavaConversions._
+import scala.collection.mutable._
 
 /**
- * Created by psangat on 15/10/15.
+ * Created by psangat on 12/09/15.
  */
 object BBS {
   Logger.getLogger("org").setLevel(Level.WARN)
@@ -130,18 +131,32 @@ object BBS {
   }
 
   def main(args: Array[String]) {
+    if (args.length < 3) {
+      System.err.println("Usage: Basic Boolean Search <master> <input_file>")
+      System.exit(1)
+    }
     val t1 = System.currentTimeMillis
     val conf = new SparkConf()
-      .setMaster("local[2]") // using 4 cores. change the int value to increase or decrease the cores used
-      .setAppName("BBS Implementation")
-      .set("spark.executor.memory", "2g") // 2GB of RAM assigned for spark
+      .setMaster(args(0))
+      .setAppName(this.getClass.getCanonicalName)
+      .set("spark.executor.instances", "3")
+      .set("spark.executor.memory", "4g")
+      .set("spark.executor.cores", "1")
+      .set("spark.task.cpus", "1")
+      .set("spark.driver.memory", "4g")
     val sc = new SparkContext(conf)
 
-    val output = sc.wholeTextFiles("/Users/psangat/Dropbox/testfiles/file*") // location of the input files
+    val output = sc.wholeTextFiles(args(1))
     val words = Common.calc_W(output)
+
+    println("==========Words=========")
+    words.foreach(println)
     val DB = Common.calc_DB(output)
+    println("==========DB=========")
+    DB.foreach(println)
     setup(DB, words, sc)
     if (EDB.size > 0) {
+      EDB.foreach(println)
       val files = clientSearch(BBTree.createTree())
       if (files.size <= 0) {
         println("The searched keyword does not exist")
