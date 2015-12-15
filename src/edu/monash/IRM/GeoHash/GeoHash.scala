@@ -26,12 +26,16 @@ object GeoHash {
       .setMaster("local[*]")
       .setAppName(this.getClass.getCanonicalName)
       .set("spark.hadoop.validateOutputSpecs", "false")
-    val encoded = encode(12.345, 123.456)
+    val encoded = hashCode("-20.8218252".toDouble, "116.777518".toDouble) // encode("-20.82182528".toDouble, "116.7775181".toDouble)
     println("Encoded Value: " + encoded)
     //createGeoHashMappedFile(conf)
-    CheckPrecisionMapping(conf)
-    println("Decoded Value: " + decode(encoded))
+    //CheckPrecisionMapping(conf)
+    //println("Decoded Value: " + decode(encoded))
+    //-64162521
+  }
 
+  def hashCode(lat: Double, lon: Double): Int = {
+    (lat.toString + lon.toString).hashCode
   }
 
   def subString(lat: Double, lon: Double) = encode(lat, lon).substring(0, 8) // change precision here
@@ -113,6 +117,9 @@ object GeoHash {
 
   private def mid(b: Bounds) = (b._1 + b._2) / 2.0
 
+  private def decodeBits(bounds: Bounds, bits: Seq[Boolean]) =
+    bits.foldLeft(bounds)((acc, bit) => if (bit) (mid(acc), acc._2) else (acc._1, mid(acc)))
+
   private def findBits(part: Double, bounds: Bounds, p: Int): List[Boolean] = {
     if (p == 0) Nil
     else {
@@ -121,9 +128,6 @@ object GeoHash {
       else false :: findBits(part, (bounds._1, avg), p - 1)
     }
   }
-
-  private def decodeBits(bounds: Bounds, bits: Seq[Boolean]) =
-    bits.foldLeft(bounds)((acc, bit) => if (bit) (mid(acc), acc._2) else (acc._1, mid(acc)))
 
   implicit class BoundedNum(x: Double) {
     def in(b: Bounds): Boolean = x >= b._1 && x <= b._2

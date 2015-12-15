@@ -89,6 +89,7 @@ object ClosestLatLon {
         val StartLatitudeLongitude = lat + "," + lon
 
         val geoCode = GeoHash.encode(lat.toDouble, lon.toDouble, 8)
+
         val startTime = System.currentTimeMillis()
         if (treeMap.contains(geoCode)) {
           //println(treeMap.get(geoCode))
@@ -117,7 +118,7 @@ object ClosestLatLon {
           println("Total errors in mapping: " + errCounter + "/" + (counter + errCounter))
         }
         else {
-          System.err.println("Search Keywords doesnot exists")
+          System.err.println("Search Keywords does not exists")
         }
         //break
 

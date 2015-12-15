@@ -9,19 +9,23 @@ import org.apache.hadoop.fs.{FileSystem, Path}
  * Created by sparkusr on 4/09/15.
  */
 object FileCopy {
+  val pattern = Pattern.compile("[0-9]{1,4}_(.*?)_(.*?)_ALLOUT(.*?).CSV")
+  val dirName = "/mnt/inputFiles"
+  //val dirName = "/home/sparkusr/filesbk"
+
   def main(args: Array[String]) {
-    //fileCopySimulationv2()
-    fileCopySimulationv3()
-    //fileCopySimulationv4()
-    //ileCopySimulationv5()
-    //fileCopySimulationv6()
+    val filePath = "file:///Users/psangat/Dropbox/IRTTestFiles/OutputTestFiles/SampleFile.json"
+    //val filePath = "file:///Users/psangat/Dropbox/IRTTestFiles/1015_20150720_1634_MLDD_ALLOUTE.json"
+    //val filePath = "file:///mnt/datafiles/1015_20150720_1634_MLDD_ALLOUTE_new.json"
+    //fileCopySimulationv3(filePath)
+
+    while (true) {
+      //fileCopySimulationv1()
+      TimeUnit.SECONDS.sleep(25)
+    }
   }
 
-  def fileCopySimulationv3(): Unit = {
-    //val filePath = "file:///mnt/datafiles/tf34_20150727_0503_MLPA_ALLOUTL.CSV"
-    val filePath = "file:///Users/psangat/Dropbox/IRTTestFiles/1015_20150720_1634_MLDD_ALLOUTE.json"
-    //val filePath = "file:///mnt/datafiles/1015_20150720_1634_MLDD_ALLOUTE.json"
-
+  def fileCopySimulationv3(filePath: String): Unit = {
     val hadoopconf = new Configuration
     val hdfsURI = "hdfs://master:9000"
     hadoopconf.set("fs.defaultFS", hdfsURI)
@@ -32,80 +36,28 @@ object FileCopy {
       hdfs.copyFromLocalFile(false, srcPath, destPath1)
       println("[Directory 1] : File " + (i + 1) + " Copied\n Going to sleep ...")
       val destPath2 = new Path("hdfs://master:9000/inputDirectory/Dir2/" + "outputFile" + i)
-      hdfs.copyFromLocalFile(false, srcPath, destPath2)
+      //hdfs.copyFromLocalFile(false, srcPath, destPath2)
       println("[Directory 2] : File " + (i + 1) + " Copied\n Going to sleep ...")
-      TimeUnit.SECONDS.sleep(60)
+      TimeUnit.SECONDS.sleep(10)
     }
   }
 
   def fileCopySimulationv1: Unit = {
-    val pattern = Pattern.compile("[0-9]{1,4}_(.*?)_(.*?)_ALLOUT(.*?).CSV")
-    val dirName = "/mnt/AllFiles"
-    //val dirName = "/home/sparkusr/filesbk"
+
     val filesList = new File(dirName).listFiles
     filesList.foreach {
       file =>
         val patternMatcher = pattern.matcher(file.getName)
         if (patternMatcher.find()) {
           val hadoopconf = new Configuration
-          val hdfsURI = "hdfs://localhost:9000"
+          val hdfsURI = "hdfs://master:9000"
           hadoopconf.set("fs.defaultFS", hdfsURI)
           val hdfs = FileSystem.get(hadoopconf)
           val srcPath = new Path(file.toString)
-          val destPath = new Path("hdfs://localhost:9000/inputDirectory/" + file.getName)
-          hdfs.copyFromLocalFile(false, srcPath, destPath)
-          println(file.getName + " Copied\n Going to sleep for 10 Minutes...")
-          TimeUnit.SECONDS.sleep(25)
-
+          val destPath = new Path("hdfs://master:9000/inputDirectory/Dir1/" + file.getName)
+          hdfs.moveFromLocalFile(srcPath, destPath)
+          println(file.getName + " Copied")
         }
-    }
-  }
-
-  def fileCopySimulationv2(): Unit = {
-    //val filePath = "file:///mnt/datafiles/tf34_20150727_0503_MLPA_ALLOUTL.CSV"
-    val filePath = "file:///home/sparkusr/filesDump/tf34_20150727_0503_MLPA_ALLOUTL.CSV"
-    val hadoopconf = new Configuration
-    val hdfsURI = "hdfs://localhost:9000"
-    hadoopconf.set("fs.defaultFS", hdfsURI)
-    val hdfs = FileSystem.get(hadoopconf)
-    val srcPath = new Path(filePath)
-    for (i <- 0 until 900000000) {
-      val destPath = new Path("hdfs://localhost:9000/inputDirectory/" + "outputFile" + i)
-      hdfs.copyFromLocalFile(false, srcPath, destPath)
-      println("[Directory 2] : FIle Copied\n Going to sleep ...")
-      TimeUnit.SECONDS.sleep(25)
-    }
-  }
-
-  def fileCopySimulationv4(): Unit = {
-    //val filePath = "file:///mnt/datafiles/tf34_20150727_0503_MLPA_ALLOUTL.CSV"
-    val filePath = "file:///home/sparkusr/filesDump/tf34_20150727_0503_MLPA_ALLOUTL.CSV"
-    val hadoopconf = new Configuration
-    val hdfsURI = "hdfs://localhost:9000"
-    hadoopconf.set("fs.defaultFS", hdfsURI)
-    val hdfs = FileSystem.get(hadoopconf)
-    val srcPath = new Path(filePath)
-    for (i <- 0 until 5000) {
-      val destPath = new Path("hdfs://localhost:9000/inputDirectory4/" + "outputFile" + i)
-      hdfs.copyFromLocalFile(false, srcPath, destPath)
-      println("[Directory 4] : FIle Copied\n Going to sleep ...")
-      TimeUnit.SECONDS.sleep(25)
-    }
-  }
-
-  def fileCopySimulationv5(): Unit = {
-    //val filePath = "file:///mnt/datafiles/tf34_20150727_0503_MLPA_ALLOUTL.CSV"
-    val filePath = "file:///home/sparkusr/filesDump/tf34_20150727_0503_MLPA_ALLOUTL.CSV"
-    val hadoopconf = new Configuration
-    val hdfsURI = "hdfs://localhost:9000"
-    hadoopconf.set("fs.defaultFS", hdfsURI)
-    val hdfs = FileSystem.get(hadoopconf)
-    val srcPath = new Path(filePath)
-    for (i <- 0 until 5000) {
-      val destPath = new Path("hdfs://localhost:9000/inputDirectory5/" + "outputFile" + i)
-      hdfs.copyFromLocalFile(false, srcPath, destPath)
-      println("[Directory 5] : FIle Copied\n Going to sleep ...")
-      TimeUnit.SECONDS.sleep(25)
     }
   }
 
