@@ -8,7 +8,6 @@ import com.mongodb.util.JSON
 import edu.monash.IRM.Common._
 import edu.monash.IRM.GeoHash.{ClosestLocation, GeoHash}
 import org.apache.spark.sql.SQLContext
-import org.apache.spark.sql.functions._
 import org.apache.spark.streaming.{Seconds, StreamingContext}
 import org.apache.spark.{SparkConf, SparkContext}
 import org.json._
@@ -23,12 +22,11 @@ import scala.collection.immutable.TreeMap
 object ProcessMicroBatchStreams {
   //Logger.getLogger("org").setLevel(Level.WARN)
   //Logger.getLogger("akka").setLevel(Level.WARN)
-  val calculateDistance = udf { (lat: String, lon: String) => GeoHash.getDistance(lat.toDouble, lon.toDouble) }
+  //val calculateDistance = udf { (lat: String, lon: String) => GeoHash.getDistance(lat.toDouble, lon.toDouble) }
   val DB_NAME = "IRT"
   val COLLECTION_NAME = "sensordata"
   val EARTH_RADIUS = 6371
   val records = Array[String]()
-  var treeMap = TreeMap.empty[String, ArrayList[ClosestLocation]]
 
   def main(args: Array[String]): Unit = {
     if (args.length < 0) {
@@ -47,16 +45,16 @@ object ProcessMicroBatchStreams {
     .set("spark.driver.memory", "10g")*/
 
     val sc = new SparkContext(conf)
-    val ssc = new StreamingContext(sc, Seconds(10))
+    val ssc = new StreamingContext(sc, Seconds(1))
     val sqc = new SQLContext(sc)
-    loadMappingTree()
+    val treeMap = loadMappingTree()
     //val gpsLookUpTable = MapInput.cacheMappingTables(sc, sqc).persist(StorageLevel.MEMORY_AND_DISK_SER_2)
     val broadcastTable = sc.broadcast(treeMap)
 
     ssc.textFileStream("hdfs://master:9000/inputDirectory/Dir1/")
       .foreachRDD { rdd =>
       if (!rdd.partitions.isEmpty) {
-        rdd.repartition(14)
+        rdd.repartition(4)
           .foreachPartition {
 
           partition =>
@@ -97,21 +95,6 @@ object ProcessMicroBatchStreams {
                       val record = JSON.parse(jsonObject.toString()).asInstanceOf[DBObject]
                       mongoColl.insert(record)
                     }
-                    /*val selectedRow = broadcastTable.value
-                      .filter("geoCode LIKE '" + GeoHash.subString(latitude, longitude) + "%'")
-                      .withColumn("Distance", calculateDistance(col("Lat"), col("Lon")))
-                      .orderBy("Distance")
-                      .select(Constants.TRACK_KM, Constants.TRACK_NAME).take(1)
-
-                    if (selectedRow.length != 0) {
-                      jsonObject.put(Constants.TRACK_KM, selectedRow(0).get(0))
-                      jsonObject.put(Constants.TRACK_NAME, selectedRow(0).get(1))
-                    }
-                    else {
-                      jsonObject.put(Constants.TRACK_KM, "NULL")
-                      jsonObject.put(Constants.TRACK_NAME, "NULL")
-                    }*/
-
                   }
                 }
             }
@@ -140,7 +123,9 @@ object ProcessMicroBatchStreams {
     return distance
   }
 
-  def loadMappingTree(): Unit = {
+  def loadMappingTree(): TreeMap[String, ArrayList[ClosestLocation]] = {
+    var treeMap = TreeMap.empty[String, ArrayList[ClosestLocation]]
+
     val filepath = "/Users/psangat/Dropbox/IRTTestFiles/GPS_Lookup_Table.csv"
     //val filepath = "/mnt/AllFiles/GPS_Lookup_Table.csv"
     val _scanner = new Scanner(new FileReader(filepath))
@@ -168,6 +153,7 @@ object ProcessMicroBatchStreams {
       //break
     }
     _scanner.close()
+    return treeMap
   }
 
 }

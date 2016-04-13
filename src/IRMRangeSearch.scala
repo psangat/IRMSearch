@@ -75,7 +75,7 @@ object IRMRangeSearch {
         ).toDF()
       dataWithoutHeader.registerTempTable("pird")
       //val output = sqlContext.sql(args(0))
-      val output = sqlContext.sql("select * from pird where track = 21") //.repartition(10)
+      val output = sqlContext.sql("select * from pird where trackName = 21") //.repartition(10)
       // val outputFolder = "file:///home/sparkusr/outputfolder"
 
       //output.map(row => row).saveAsTextFile(outputFolder)

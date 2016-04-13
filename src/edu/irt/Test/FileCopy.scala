@@ -13,13 +13,13 @@ import org.apache.hadoop.fs.{FileSystem, Path}
 object FileCopy {
 
   val pattern = Pattern.compile("SampleFile[0-9]{1,10}.json")
-  val dirName = "/mnt/outputFiles"
-  //val dirName = "/Users/psangat/Dropbox/IRTTestFiles/OutputTestFiles/"
+  //val dirName = "/mnt/outputFiles"
+  val dirName = "/Users/psangat/Dropbox/IRTTestFiles/OutputTestFiles/"
 
   def main(args: Array[String]) {
     while (true) {
       fileCopySimulationv1()
-      TimeUnit.SECONDS.sleep(1)
+      TimeUnit.SECONDS.sleep(5)
     }
   }
 

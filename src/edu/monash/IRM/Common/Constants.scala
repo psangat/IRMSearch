@@ -4,8 +4,8 @@ package edu.monash.IRM.Common
  * Created by psangat on 29/10/15.
  */
 object Constants {
-  val LATITUDE = "GPSLat"
-  val LONGITUDE = "GPSLon"
+  val LATITUDE = "latitude"
+  val LONGITUDE = "longitude"
   val TRACK_KM = "TrackKM"
   val TRACK_NAME = "TrackName"
 }

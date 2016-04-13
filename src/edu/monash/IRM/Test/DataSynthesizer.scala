@@ -39,7 +39,7 @@ object DataSynthesizer {
   }
 
   def printFile(): Unit = {
-    val pw = new PrintWriter(new File("/Users/psangat/Dropbox/IRTTestFiles/OutputTestFiles/SampleFile.json"));
+    val pw = new PrintWriter(new File("/Users/psangat/Dropbox/IRTTestFiles/OutputTestFiles/SampleFile.json"))
     recordsList.foreach { record =>
       pw.println(record)
     }
